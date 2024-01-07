@@ -1,0 +1,85 @@
+---
+title: "Exploratory analysis 1"
+output: html_document
+date: "2024-01-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+require(geoR)
+data(s100)
+summary(s100)
+names(s100)
+var(s100$data)
+boxplot(s100$data)
+
+## points.geodata()
+points(s100)
+points(s100, pt.div="equal")
+points(s100, cex.min=.6, cex.max=.6)
+points(s100, cex.min=.3, cex.max=3)
+points(s100, cex.min=1, cex.max=1, pt.div="quart")
+points(s100, pt.div="quart")
+points(s100, pt.div=4)
+points(s100, pt.div="dec")
+points(s100, cex.min=1, cex.max=1, pt.div="quint")
+points(s100, cex.min=1, cex.max=1, col="gray")
+points(s100, cex.min=1, cex.max=1, col=rainbow(100))
+points(s100, cex.min=1, cex.max=1, col=terrain.colors(100))
+points(s100, pt.div="equal", pch.seq="+")
+points(s100, data=sample(s100$data))
+points(s100, data=exp(s100$data))
+class(s100)
+args(points.geodata)
+help(points.geodata)
+data(parana)
+summary(parana)
+borders <- parana$borders
+points(parana, border=borders)
+points(parana, border=borders, trend="1st")
+points(parana, border=borders, trend="1st", pt.div="quart")
+
+
+## plot.geodata()
+plot(s100)
+plot(parana)
+plot(parana, bor=borders, low=T)
+data(ca20)
+summary(ca20)
+names(ca20)
+plot(ca20)
+points(ca20, cex.min=0.5, cex.max=0.5)
+polygon(ca20$reg1)
+polygon(ca20$reg2)
+polygon(ca20$reg3)
+plot(ca20)
+plot(ca20,trend=~area)
+plot(ca20,trend=~area+altitude)
+
+ksat <- read.geodata("http://www.leg.ufpr.br/geoR/tutorials/datasets/Cruciani.dat", head=T, row.names=1) 
+summary(ksat)
+plot(ksat)
+
+require(MASS)
+boxcox(ksat)
+plot(ksat, lambda=0)
+kbor <- read.table("http://www.leg.ufpr.br/geoR/tutorials/datasets/Cruciani.border", head=T, row.names=1) 
+kbor
+plot(ksat, lambda=0, bor=kbor)
+points(ksat, lambda=0, bor=kbor)
+
+## Variog
+s100.v <- variog(s100, max.d=1)
+plot(s100.v)
+parana.v <- variog(parana, max.dist=400, trend="1st")
+plot(parana.v)
+ca20.v <- variog(ca20, trend=~area, max.d=800)
+plot(ca20.v)
+ksat.v <- variog(ksat, max.d=10, lam=0)
+plot(ksat.v)
+
+```

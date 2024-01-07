@@ -1,0 +1,113 @@
+---
+title: "Simulation 1"
+output: html_document
+date: "2024-01-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+require(geoR)
+
+par.ori <- par(no.readonly = TRUE)
+if(!exists(".Random.seed")) set.seed(123)
+
+## grf
+
+# example 1
+args(grf)
+sim01 <- grf(50, cov.pars=c(1, .25))
+sim01
+plot(sim01)
+plot.geodata(sim01)
+points.geodata(sim01)
+sim02 <- grf(256, cov.pars=c(1, .3), grid="reg") 
+points.geodata(sim02)
+image(sim02)
+persp(sim02)
+persp(sim02, theta=30, phi=20)
+
+# example 2
+sim11 <- grf(100, ylims=c(0,0), cov.pars=c(1, 0.25))
+image(sim11)
+image(sim11, type="l")
+image(sim11, type="b", cex=0.5)
+##
+sim12 <- grf(100, ylims=c(0,0), cov.pars=c(1, 0.0))
+image(sim12, type="l")
+##
+sim13 <- grf(100, ylims=c(0,0), cov.pars=c(1, 0.5))
+image(sim13, type="l")
+##
+par(mfrow=c(3,1), mar=c(2,2,1,1))
+yl <- range(c(sim11$data, sim12$data, sim13$data))
+image(sim11, type="l", ylim=yl)
+image(sim12, type="l", ylim=yl)
+image(sim13, type="l", ylim=yl)
+par(par.ori)
+
+# example 3
+sim21 <- grf(100, ylims=c(0,0), cov.pars=c(1, 0.75), cov.model="sph")
+image(sim21, type="l")
+##
+sim22 <- grf(50, ylims=c(0,0), cov.pars=c(1, 0.75/sqrt(3)), cov.model="mat", kappa=2)
+image(sim22, type="l")
+##
+par(mfrow=c(3,1), mar=c(2,2,1,1))
+yl <- range(c(sim11$data, sim21$data, sim22$data))
+image(sim11, type="l", ylim=yl)
+image(sim21, type="l", ylim=yl)
+image(sim22, type="l", ylim=yl)
+par(par.ori)
+
+# example 4
+sim31 <- grf(50, ylims=c(0,0), cov.pars=c(1, 0.75/sqrt(3)), nugget = 0.1, cov.model="gau")
+image(sim31, type="l")
+
+set.seed(12)
+sim32 <- grf(100, ylims=c(0,0), cov.pars=c(1, 0.25))
+##
+set.seed(12)
+sim33 <- grf(100, ylims=c(0,0), cov.pars=c(1, 0.25), nug=0.25)
+##
+set.seed(12)
+sim34 <- grf(100, ylims=c(0,0), cov.pars=c(1, 0.25), nug=0.5)
+##
+par(mfrow=c(3,1), mar=c(2,2,1,1))
+yl <- range(c(sim32$data, sim33$data, sim34$data))
+image(sim32, type="l", ylim=yl)
+image(sim33, type="l", ylim=yl)
+image(sim34, type="l", ylim=yl)
+par(par.ori)
+
+# example 5
+sim39 <- grf(961, grid="reg", cov.pars=c(1, 0))
+image(sim39)
+## simulação com estrutura espacial isotropica
+sim40 <- grf(961, grid="reg", cov.pars=c(1, .15))
+image(sim40)
+## simulação com estrutura espacial anisotropica
+sim41 <- grf(961, grid="reg", cov.pars=c(1, .15), aniso.pars=c(pi/4, 3))
+image(sim41)
+
+# example 6
+sim51 <- grf(100, ylims=c(0,0), cov.pars=c(1, 0.25))
+sim51$data <- 10 - 5*sim51$coords[,1] + sim51$data
+image(sim51, ty="l")
+
+# example 7
+sim61 <- grf(961, grid="reg", cov.pars=c(1, 0.25), lambda = 0)
+image(sim61)
+hist(sim61$data)
+
+# example 8
+sim71 <- grf(121, grid="reg", cov.pars=c(1, 0.25))
+sim71$data <- rpois(121, exp(0.5 + sim71$data))
+image(sim71, col=gray(seq(1,0.2,l=11)))
+text(sim71$coords[,1], sim71$coords[,2], sim71$data)
+barplot(table(sim71$data))
+
+```

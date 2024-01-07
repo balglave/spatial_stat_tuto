@@ -1,0 +1,103 @@
+---
+title: "Simulation 2"
+output: html_document
+date: "2024-01-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+## None spatial example
+x <- c(23, 28, 25, 27, 32, 45, 51)
+n <- length(x)
+beta <- .03
+mu <- exp(x * beta)/(1+ exp(x*beta))
+mu
+y <- rbinom(n, size=1, prob=mu)
+y
+beta <- 0.05
+mu <- exp(x * beta)
+mu
+y <- rpois(n, lam=mu)
+y
+beta <- 0.05
+x * beta
+u <- rnorm(n, sd=1)
+u
+x * beta + u
+mu <- exp(x * beta + u)
+set.seed(123)
+y <- rpois(n, lam=mu)
+y
+set.seed(123)
+y <- rpois(n, lam=exp(x*beta))
+y
+
+
+## Spatial example
+cp <- expand.grid(1:10, 1:10)
+cp
+plot(cp, asp=1)
+require(geoR)
+s <- grf(grid=cp, cov.pars=c(2, 3))$data
+mu <- exp(s)
+y <- rpois(100, lam=mu)
+plot(cp, asp=1, type="n")
+text(cp[,1], cp[,2], y, cex=2)
+par(mfrow=c(1,2), mar=c(3,3,0.5,0.5), mgp=c(2,1,0))
+plot(cp, asp=1, type="n")
+text(cp[,1], cp[,2], round(s, dig=2), cex=1.5)
+plot(cp, asp=1, type="n")
+text(cp[,1], cp[,2], y, cex=1.5)
+set.seed(23)
+S <- grf(100, cov.pars=c(1, 0.25))
+
+S1 <- S
+S1$data <- exp(S$data)
+set.seed(351)
+y1 <- rpois(100, lam=S1$data)
+
+points(S1)
+text(S1$coords, lab=y1, col=4,pos=4, offset=0.3)
+
+S2 <- S
+S2$data <- exp(1 + S$data)
+set.seed(351)
+y2 <- rpois(100, lam=S2$data)
+
+points(S2)
+text(S2$coords, lab=y2, col=4,pos=4, offset=0.3)
+
+S3 <- S
+err <- rnorm(100, sd=0.1)
+S3$data <- exp(1 + S$data + err)
+set.seed(351)
+y3 <- rpois(100, lam=S3$data)
+
+points(S3)
+text(S3$coords, lab=y3, col=4,pos=4, offset=0.3)
+
+round(cbind(S=S$data, lam1=S1$data, y1, lam2=S2$data, y2, lam3=S3$data, err, y3), dig=3)
+
+S4 <- S
+S4$data <- exp(S$data)/(1+exp(S$data))
+set.seed(351)
+y4 <- rbinom(100, size=1, prob=S4$data)
+y4
+sum(y4)
+points(S4)
+text(S4$coords, lab=y1, col=4,pos=4, offset=0.3)
+
+S5 <- S
+S5$data <- exp(2+S$data)/(1+exp(2+S$data))
+set.seed(351)
+y5 <- rbinom(100, size=1, prob=S5$data)
+y5
+sum(y5)
+points(S5)
+text(S5$coords, lab=y1, col=4,pos=4, offset=0.3)
+
+```

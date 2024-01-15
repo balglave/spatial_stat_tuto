@@ -1,0 +1,96 @@
+---
+title: "Simulation 3"
+output: html_document
+date: "2024-01-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(RGeostats)
+library(maps)
+library(mapdata)
+```
+
+```{r}
+
+projec.toggle(0)
+data.db <- db.create(data.frame(x1=c(0,0,1,1),x2=c(0,1,1,0)))
+grid.db <- db.grid.init(data.db,nodes=c(100,100))
+mod <- model.create("Spherical",range=0.15,sill=1)
+sim <- simtub(model=mod,dbout=grid.db,nbsim=2,nbtuba=1000)
+plot(sim,name="Simu.V1.S1",pos.legend=1,zlim=c(-4,4))
+plot(sim,name="Simu.V1.S2",pos.legend=1,zlim=c(-4,4))
+
+
+projec.toggle(0)
+data.db <- db.create(data.frame(x1=c(0,0,1,1),x2=c(0,1,1,0)))
+grid.db <- db.grid.init(data.db,nodes=c(100,100))
+mod <- model.create("Exponential",range=.15,sill=1)
+sim1<- simtub(model=mod,dbout=grid.db,nbsim=1,nbtuba=1)
+sim2<- simtub(model=mod,dbout=grid.db,nbsim=1,nbtuba=10)
+sim3<- simtub(model=mod,dbout=grid.db,nbsim=1,nbtuba=100)
+sim4<- simtub(model=mod,dbout=grid.db,nbsim=1,nbtuba=1000)
+plot(sim1,name="Simu.V1.S1",pos.legend=1,zlim=c(-4,4))
+plot(sim2,name="Simu.V1.S1",pos.legend=1,zlim=c(-4,4))
+plot(sim3,name="Simu.V1.S1",pos.legend=1,zlim=c(-4,4))
+plot(sim4,name="Simu.V1.S1",pos.legend=1,zlim=c(-4,4))
+
+
+projec.toggle(0)
+grid.db <- db.grid.init(db.create(data.frame(x1=c(0,0,1,1),x2=c(0,1,1
+,0))),
+ nodes=c(101,101))
+a1 <- model.create(vartype=1,sill=0.01)
+mod <- model.create(vartype=3,sill=0.99,range=0.25,model=a1)
+real <- simtub(model=mod,dbout=grid.db,nbsim=1,nbtuba=1000)
+data.df <- data.frame(x1=round(runif(100,0,1),2),x2=round(runif(100,0
+,1),2))
+data.df <- merge(data.df,real[,2:4],by=c("x1","x2"));names(data.df)[3
+]<-"z1"
+data.db <- db.create(data.df)
+kri <- kriging(dbin=data.db,dbout=grid.db,model=mod,
+ neigh=neigh.create(type=0,ndim=2),uc=NA,mean=0)
+sc <- simtub(dbin=data.db,dbout=grid.db,model=mod,
+ neigh= neigh.create(type=0,ndim=2),uc=NA,mean=0,
+ nbsim=1,nbtuba=1000,seed=232132)
+plot(real,name="Simu.V1.S1",title="Reality",pos.legend=1,zlim=c(-4,4)
+)
+plot(data.db,title="Sample data")
+plot(kri,name="Kriging.z1.estim",title="Kriging",pos.legend=1,zlim=c(
+-4,4))
+plot(sc,name="Simu.z1.S1",title="Conditional simulation",
+ pos.legend=1,zlim=c(-4,4))
+
+
+projec.toggle(0)
+rg.load("Demo.herring.len.scot.db.data","db.data")
+rg.load("Demo.herring.len.scot.poly.data","poly.data")
+rg.load("Demo.herring.len.scot.grid.simu","grid.simu")
+projec.define(db=db.data)
+hist(db.data[,"m.length"],breaks=20,col="grey",main="",xlab="m.length
+")
+model.anam <- anam.fit(db.data,type="gaus",nbpoly=10,draw=T)
+db.data <- anam.z2y(db.data,anam=model.anam)
+vario.data <- vario.calc(db.data)
+model.vario <- model.auto(vario=vario.data)
+grid.simu <- simtub(dbin=db.data, dbout=grid.simu, model=model.vario,
+ neigh=neigh.create(type=0,ndim=2), uc = "", mean
+= 0, seed = 29091978,
+ nbsimu = 1, nbtuba = 1000, radix = "Simu",
+ modify.target = TRUE)
+grid.simu <- anam.y2z(grid.simu,name="Simu.Gaussian.m.length.S1",anam
+=model.anam)
+plot(grid.simu,name="Simu.Gaussian.m.length.S1",
+ asp=1/cos(mean(db.extract(db=db.data,names="x2"))*pi/180),
+ title="Conditional Simulation of Gaussian Variable",
+ pos.legend=5,flag.proj=F)
+plot(poly.data,col=0,flag.proj=F,add=T)
+map("worldHires",add=T,fill=T,col=8)
+plot(grid.simu,name="Raw.Simu.Gaussian.m.length.S1",asp=1/cos(mean(db.extract(db=db.data,names="x2"))*pi/180),
+     title="Conditional Simulation of Raw Variable",
+     pos.legend=5,flag.proj=F)
+plot(poly.data,col=0,flag.proj=F,add=T)
+map("worldHires",add=T,fill=T,col=8);box()
+
+
+```

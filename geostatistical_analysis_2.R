@@ -35,7 +35,7 @@ ctc.vf <- variofit(ctc.v, ini=c(0.2, 10), cov.model= "exp")
 lines(ctc.vf)
 ctc.vf
 apply(bor,2,range)
-gr <- expand.grid(x=seq(-3.6, 38.5, by=.25), y=seq(0,23.6, by=.25)) 
+gr <- expand.grid(x=seq(-3.6, 38.5, by=.25), y=seq(0,23.6, by=.25))
 points(ctc, pt.div= "quint", cex.max=1, cex.min=1, bord=bor, lam=0)
 points(gr, pch="+")
 gi <- polygrid(gr, bor=bor)
@@ -44,3 +44,4 @@ KC <- krige.control(obj.mo=ctc.vf, lam=0)
 ctc.k <- krige.conv(ctc, loc=gi, krige=KC)
 image(ctc.k, loc=gr, border=bor, col=gray(seq(1,0,l=11)))
 image(ctc.k, loc=gr, border=bor, col=gray(seq(1,0,l=21)), x.leg=c(0,30), y.leg=c(-8,-4))
+

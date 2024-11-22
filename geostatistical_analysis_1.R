@@ -1,3 +1,4 @@
+# http://www.leg.ufpr.br/~paulojus/geoR/geoRdoc/geoRintro.html
 require(geoR)
 data(s100)
 summary(s100)
@@ -89,3 +90,4 @@ kc4 <- krige.conv(s100, locations = loci, krige = krige.control(obj.m = wls))
 pred.grid <-  expand.grid(seq(0,1, l=51), seq(0,1, l=51))
 kc <- krige.conv(s100, loc = pred.grid, krige = krige.control(obj.m = ml))
 image(kc, loc = pred.grid, col=gray(seq(1,0.1,l=30)), xlab="Coord X", ylab="Coord Y")
+
